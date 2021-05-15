@@ -169,6 +169,20 @@ object MDUtil {
     }
   }
 
+  @RestrictTo(LIBRARY_GROUP)
+  fun resolveTextSize(
+    context: Context,
+    @AttrRes attr: Int,
+    defaultValue: (() -> Int)? = null
+  ): Float {
+    val a = context.theme.obtainStyledAttributes(intArrayOf(attr))
+    try {
+      return a.getDimensionPixelSize(0, defaultValue?.invoke() ?: 0).toFloat()
+    } finally {
+      a.recycle()
+    }
+  }
+
   @RestrictTo(LIBRARY_GROUP) fun resolveFloat(
     context: Context,
     @AttrRes attr: Int,

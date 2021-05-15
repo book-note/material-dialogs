@@ -18,6 +18,7 @@ package com.afollestad.materialdialogs.internal.message
 import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import android.view.View.MeasureSpec.AT_MOST
 import android.view.View.MeasureSpec.EXACTLY
@@ -77,7 +78,8 @@ class DialogContentLayout(
     @StringRes res: Int?,
     text: CharSequence?,
     typeface: Typeface?,
-    applySettings: (DialogMessageSettings.() -> Unit)?
+    applySettings: (DialogMessageSettings.() -> Unit)?,
+    textSize: Float?
   ) {
     addContentScrollView(noVerticalPadding = false)
     if (messageTextView == null) {
@@ -93,6 +95,9 @@ class DialogContentLayout(
       typeface?.let { this.typeface = it }
       maybeSetTextColor(dialog.windowContext, R.attr.md_color_content)
       messageSettings.setText(res, text)
+    }
+    if (textSize != null) {
+      messageTextView?.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
     }
   }
 
@@ -134,8 +139,8 @@ class DialogContentLayout(
       scrollFrame!!.addView(customView?.apply {
         if (horizontalPadding) {
           updatePadding(
-              left = frameHorizontalMargin,
-              right = frameHorizontalMargin
+            left = frameHorizontalMargin,
+            right = frameHorizontalMargin
           )
         }
       })
@@ -186,8 +191,8 @@ class DialogContentLayout(
     // The ScrollView is the most important child view because it contains main content
     // like a message.
     scrollView?.measure(
-        makeMeasureSpec(specWidth, EXACTLY),
-        makeMeasureSpec(specHeight, AT_MOST)
+      makeMeasureSpec(specWidth, EXACTLY),
+      makeMeasureSpec(specHeight, AT_MOST)
     )
     val scrollViewHeight = scrollView?.measuredHeight ?: 0
     val remainingHeightAfterScrollView = specHeight - scrollViewHeight
@@ -208,12 +213,12 @@ class DialogContentLayout(
         continue
       }
       currentChild.measure(
-          if (currentChild == customView && useHorizontalPadding) {
-            makeMeasureSpec(specWidth - (frameHorizontalMargin * 2), EXACTLY)
-          } else {
-            makeMeasureSpec(specWidth, EXACTLY)
-          },
-          makeMeasureSpec(heightPerRemainingChild, AT_MOST)
+        if (currentChild == customView && useHorizontalPadding) {
+          makeMeasureSpec(specWidth - (frameHorizontalMargin * 2), EXACTLY)
+        } else {
+          makeMeasureSpec(specWidth, EXACTLY)
+        },
+        makeMeasureSpec(heightPerRemainingChild, AT_MOST)
       )
       totalChildHeight += currentChild.measuredHeight
     }
@@ -242,10 +247,10 @@ class DialogContentLayout(
         childRight = measuredWidth
       }
       currentChild.layout(
-          /*left=   */childLeft,
-          /*top=    */currentTop,
-          /*right=  */childRight,
-          /*bottom= */currentBottom
+        /*left=   */childLeft,
+        /*top=    */currentTop,
+        /*right=  */childRight,
+        /*bottom= */currentBottom
       )
       currentTop = currentBottom
     }

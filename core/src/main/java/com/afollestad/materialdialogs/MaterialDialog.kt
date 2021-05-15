@@ -42,6 +42,7 @@ import com.afollestad.materialdialogs.list.getListAdapter
 import com.afollestad.materialdialogs.message.DialogMessageSettings
 import com.afollestad.materialdialogs.utils.MDUtil.assertOneSet
 import com.afollestad.materialdialogs.utils.MDUtil.resolveDimen
+import com.afollestad.materialdialogs.utils.MDUtil.resolveTextSize
 import com.afollestad.materialdialogs.utils.font
 import com.afollestad.materialdialogs.utils.hideKeyboard
 import com.afollestad.materialdialogs.utils.isVisible
@@ -87,7 +88,8 @@ class MaterialDialog(
     internal set
   var cornerRadius: Float? = null
     internal set
-  @Px private var maxWidth: Int? = null
+  @Px
+  private var maxWidth: Int? = null
 
   /** The root layout of the dialog. */
   val view: DialogLayout
@@ -104,14 +106,14 @@ class MaterialDialog(
   init {
     val layoutInflater = LayoutInflater.from(windowContext)
     val rootView = dialogBehavior.createView(
-        creatingContext = windowContext,
-        dialogWindow = window!!,
-        layoutInflater = layoutInflater,
-        dialog = this
+      creatingContext = windowContext,
+      dialogWindow = window!!,
+      layoutInflater = layoutInflater,
+      dialog = this
     )
     setContentView(rootView)
     this.view = dialogBehavior.getDialogLayout(rootView)
-        .also { it.attachDialog(this) }
+      .also { it.attachDialog(this) }
 
     // Set defaults
     this.titleFont = font(attr = R.attr.md_font_title)
@@ -132,9 +134,9 @@ class MaterialDialog(
   ): MaterialDialog = apply {
     assertOneSet("icon", drawable, res)
     populateIcon(
-        view.titleLayout.iconView,
-        iconRes = res,
-        icon = drawable
+      view.titleLayout.iconView,
+      iconRes = res,
+      icon = drawable
     )
   }
 
@@ -150,11 +152,14 @@ class MaterialDialog(
   ): MaterialDialog = apply {
     assertOneSet("title", text, res)
     populateText(
-        view.titleLayout.titleView,
-        textRes = res,
-        text = text,
-        typeface = this.titleFont,
-        textColor = R.attr.md_color_title
+      view.titleLayout.titleView,
+      textRes = res,
+      text = text,
+      typeface = this.titleFont,
+      textColor = R.attr.md_color_title,
+      textSize = resolveTextSize(windowContext, attr = R.attr.md_text_size_title){
+        context.resources.getDimensionPixelOffset(R.dimen.md_title_textsize)
+      }
     )
   }
 
@@ -171,11 +176,14 @@ class MaterialDialog(
   ): MaterialDialog = apply {
     assertOneSet("message", text, res)
     this.view.contentLayout.setMessage(
-        dialog = this,
-        res = res,
-        text = text,
-        typeface = this.bodyFont,
-        applySettings = applySettings
+      dialog = this,
+      res = res,
+      text = text,
+      typeface = this.bodyFont,
+      applySettings = applySettings,
+      textSize = resolveTextSize(windowContext, attr = R.attr.md_text_size_body) {
+        context.resources.getDimensionPixelOffset(R.dimen.md_message_textsize)
+      }
     )
   }
 
@@ -203,11 +211,14 @@ class MaterialDialog(
     }
 
     populateText(
-        btn,
-        textRes = res,
-        text = text,
-        fallback = android.R.string.ok,
-        typeface = this.buttonFont
+      btn,
+      textRes = res,
+      text = text,
+      fallback = android.R.string.ok,
+      typeface = this.buttonFont,
+      textSize = resolveTextSize(windowContext, attr = R.attr.md_text_size_button) {
+        context.resources.getDimensionPixelOffset(R.dimen.md_action_button_textsize)
+      }
     )
   }
 
@@ -241,11 +252,14 @@ class MaterialDialog(
     }
 
     populateText(
-        btn,
-        textRes = res,
-        text = text,
-        fallback = android.R.string.cancel,
-        typeface = this.buttonFont
+      btn,
+      textRes = res,
+      text = text,
+      fallback = android.R.string.cancel,
+      typeface = this.buttonFont,
+      textSize = resolveTextSize(windowContext, attr = R.attr.md_text_size_button) {
+        context.resources.getDimensionPixelSize(R.dimen.md_action_button_textsize)
+      }
     )
   }
 
@@ -255,8 +269,8 @@ class MaterialDialog(
   }
 
   @Deprecated(
-      "Use of neutral buttons is discouraged, see " +
-          "https://material.io/design/components/dialogs.html#actions."
+    "Use of neutral buttons is discouraged, see " +
+        "https://material.io/design/components/dialogs.html#actions."
   )
   fun neutralButton(
     @StringRes res: Int? = null,
@@ -275,16 +289,19 @@ class MaterialDialog(
     }
 
     populateText(
-        btn,
-        textRes = res,
-        text = text,
-        typeface = this.buttonFont
+      btn,
+      textRes = res,
+      text = text,
+      typeface = this.buttonFont,
+      textSize = resolveTextSize(windowContext, attr = R.attr.md_text_size_button) {
+        context.resources.getDimensionPixelSize(R.dimen.md_action_button_textsize)
+      }
     )
   }
 
   @Deprecated(
-      "Use of neutral buttons is discouraged, see " +
-          "https://material.io/design/components/dialogs.html#actions."
+    "Use of neutral buttons is discouraged, see " +
+        "https://material.io/design/components/dialogs.html#actions."
   )
   fun clearNeutralListeners(): MaterialDialog = apply {
     this.neutralListeners.clear()
@@ -294,7 +311,8 @@ class MaterialDialog(
    * Turns off auto dismiss. Action button and list item clicks won't dismiss the dialog on their
    * own. You have to handle dismissing the dialog manually with the [dismiss] method.
    */
-  @CheckResult fun noAutoDismiss(): MaterialDialog = apply {
+  @CheckResult
+  fun noAutoDismiss(): MaterialDialog = apply {
     this.autoDismissEnabled = false
   }
 
@@ -343,7 +361,8 @@ class MaterialDialog(
   }
 
   /** Turns debug mode on or off. Draws spec guides over dialog views. */
-  @CheckResult fun debugMode(
+  @CheckResult
+  fun debugMode(
     debugMode: Boolean = true
   ): MaterialDialog = apply {
     this.view.debugMode = debugMode
@@ -371,8 +390,8 @@ class MaterialDialog(
   }
 
   @Deprecated(
-      message = "Use fluent cancelable(Boolean) instead.",
-      replaceWith = ReplaceWith("cancelable(cancelable)")
+    message = "Use fluent cancelable(Boolean) instead.",
+    replaceWith = ReplaceWith("cancelable(cancelable)")
   )
   override fun setCancelable(cancelable: Boolean) {
     this.cancelable = cancelable
@@ -386,8 +405,8 @@ class MaterialDialog(
   }
 
   @Deprecated(
-      message = "Use fluent cancelOnTouchOutside(Boolean) instead.",
-      replaceWith = ReplaceWith("cancelOnTouchOutside(cancelOnTouchOutside)")
+    message = "Use fluent cancelOnTouchOutside(Boolean) instead.",
+    replaceWith = ReplaceWith("cancelOnTouchOutside(cancelOnTouchOutside)")
   )
   override fun setCanceledOnTouchOutside(cancelOnTouchOutside: Boolean) {
     this.cancelOnTouchOutside = cancelOnTouchOutside
@@ -417,10 +436,10 @@ class MaterialDialog(
 
   private fun setWindowConstraints() {
     dialogBehavior.setWindowConstraints(
-        context = windowContext,
-        maxWidth = maxWidth,
-        window = window!!,
-        view = view
+      context = windowContext,
+      maxWidth = maxWidth,
+      window = window!!,
+      view = view
     )
   }
 
@@ -430,11 +449,11 @@ class MaterialDialog(
     }
     window?.setBackgroundDrawable(ColorDrawable(TRANSPARENT))
     dialogBehavior.setBackgroundColor(
-        view = view,
-        color = backgroundColor,
-        cornerRadius = cornerRadius ?: resolveDimen(windowContext, attr = R.attr.md_corner_radius) {
-          context.resources.getDimension(R.dimen.md_dialog_default_corner_radius)
-        }
+      view = view,
+      color = backgroundColor,
+      cornerRadius = cornerRadius ?: resolveDimen(windowContext, attr = R.attr.md_corner_radius) {
+        context.resources.getDimension(R.dimen.md_dialog_default_corner_radius)
+      }
     )
   }
 
@@ -443,6 +462,7 @@ class MaterialDialog(
      * The default [dialogBehavior] for all constructed instances of
      * [MaterialDialog]. Defaults to [ModalDialog].
      */
-    @JvmStatic var DEFAULT_BEHAVIOR: DialogBehavior = ModalDialog
+    @JvmStatic
+    var DEFAULT_BEHAVIOR: DialogBehavior = ModalDialog
   }
 }

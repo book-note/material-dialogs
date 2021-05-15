@@ -13,6 +13,10 @@
     <item name="android:windowAnimationStyle">@style/MD_WindowAnimation</item>
     <item name="android:backgroundDimEnabled">true</item>
 
+    <item name="md_text_size_body">12sp</item>
+    <item name="md_text_size_title">16sp</item>
+    <item name="md_text_size_button">12sp</item>
+
     <item name="md_divider_color">@color/md_divider_light_theme</item>
     <item name="md_item_selector">@drawable/md_item_selector</item>
     <item name="md_button_selector">@drawable/md_btn_selector</item>
@@ -29,6 +33,11 @@
     <item name="android:windowAnimationStyle">@style/MD_WindowAnimation</item>
     <item name="android:backgroundDimEnabled">true</item>
     <item name="android:windowNoTitle">true</item>
+
+    <item name="md_text_size_body">12sp</item>
+    <item name="md_text_size_title">16sp</item>
+    <item name="md_text_size_button">12sp</item>
+
 
     <item name="md_divider_color">@color/md_divider_dark_theme</item>
     <item name="md_item_selector">@drawable/md_item_selector_dark</item>
