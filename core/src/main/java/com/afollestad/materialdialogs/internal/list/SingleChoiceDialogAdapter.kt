@@ -97,11 +97,11 @@ internal class SingleChoiceDialogAdapter(
       dialog.setActionButtonEnabled(POSITIVE, true)
     } else {
       // Don't wait for action button, call listener and dismiss if auto dismiss is applicable
-      this.selection?.invoke(dialog, index, this.items[index])
       if (dialog.autoDismissEnabled && !dialog.hasActionButtons()) {
         dialog.dismiss()
       }
     }
+    this.selection?.invoke(dialog, index, this.items[index])
   }
 
   override fun onCreateViewHolder(

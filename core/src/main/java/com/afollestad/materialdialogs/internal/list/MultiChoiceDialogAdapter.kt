@@ -113,12 +113,12 @@ internal class MultiChoiceDialogAdapter(
       dialog.setActionButtonEnabled(POSITIVE, allowEmptySelection || currentSelection.isNotEmpty())
     } else {
       // Don't wait for action button, call listener and dismiss if auto dismiss is applicable
-      val selectedItems = this.items.pullIndices(this.currentSelection)
-      this.selection?.invoke(dialog, this.currentSelection, selectedItems)
       if (dialog.autoDismissEnabled && !dialog.hasActionButtons()) {
         dialog.dismiss()
       }
     }
+    val selectedItems = this.items.pullIndices(this.currentSelection)
+    this.selection?.invoke(dialog, this.currentSelection, selectedItems)
   }
 
   override fun onCreateViewHolder(
